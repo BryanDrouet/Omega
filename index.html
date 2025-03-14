@@ -7,166 +7,106 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 20px auto;
-            text-align: center;
+            margin: 20px;
+            padding: 20px;
         }
-        .toolbar {
+        .container {
+            display: flex;
+            flex-direction: column;
+        }
+        .options {
             margin-bottom: 10px;
         }
-        .toolbar select {
-            margin: 2px;
-            padding: 5px;
-            cursor: pointer;
+        .textarea-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
         }
-        .editor {
+        textarea {
             width: 100%;
             height: 150px;
-            padding: 5px;
+            padding: 10px;
+            font-size: 16px;
             border: 1px solid #ccc;
-            overflow-y: auto;
-            text-align: left;
-            white-space: pre-wrap;
+            border-radius: 5px;
+            resize: none;
         }
-        .counter {
+        .output {
             margin-top: 10px;
-            font-size: 18px;
         }
-        .editor span.exceed {
+        .output span {
+            font-weight: bold;
+        }
+        .error {
             color: red;
         }
     </style>
 </head>
 <body>
-    <h2>Compteur de mots et de caractères</h2>
 
-    <!-- Barre d'outils -->
-    <div class="toolbar">
-        <label for="alignment">Alignement :</label>
-        <select id="alignment" onchange="setAlignment(this.value)">
-            <option value="left">Gauche</option>
-            <option value="center">Centre</option>
-            <option value="right">Droite</option>
-            <option value="justify">Justifié</option>
-        </select>
-        <label for="textDirection">Direction du texte :</label>
-        <select id="textDirection" onchange="setTextDirection(this.value)">
-            <option value="ltr">De gauche à droite</option>
-            <option value="rtl">De droite à gauche</option>
-        </select>
-    </div>
+    <div class="container">
+        <div class="options">
+            <label for="align">Aligner le texte :</label>
+            <select id="align" onchange="updateTextAlignment()">
+                <option value="left">Gauche</option>
+                <option value="center">Centré</option>
+                <option value="right">Droite</option>
+                <option value="justify">Justifié</option>
+            </select>
+        </div>
 
-    <!-- Zone de texte éditable -->
-    <div id="editor" class="editor" contenteditable="true"></div>
+        <div class="options">
+            <label for="dir">Direction du texte :</label>
+            <select id="dir" onchange="updateTextDirection()">
+                <option value="ltr">De gauche à droite</option>
+                <option value="rtl">De droite à gauche</option>
+            </select>
+        </div>
 
-    <!-- Paramètres -->
-    <div>
-        <label>
-            <input type="checkbox" id="includeSpaces">
-            Compter les espaces
-        </label>
-    </div>
-    <div>
-        <label>
-            <input type="checkbox" id="limitChars">
-            Activer limite de caractères
-        </label>
-        <input type="number" id="charLimit" value="100" min="1">
-    </div>
-    <div class="counter">
-        <p>Caractères : <span id="charCount">0</span></p>
-        <p>Mots : <span id="wordCount">0</span></p>
-        <p id="exceedMsg" style="color: red; display: none;">Limite dépassée de <span id="exceedCount">0</span> caractères !</p>
+        <div class="textarea-container">
+            <textarea id="editor" placeholder="Écris ici..." oninput="updateCount()"></textarea>
+            <div class="output">
+                <span>Nombre de caractères :</span> <span id="charCount">0</span><br>
+                <span>Nombre de mots :</span> <span id="wordCount">0</span><br>
+                <span class="error" id="charError"></span>
+            </div>
+        </div>
     </div>
 
     <script>
-        const editor = document.getElementById("editor");
-        const charCount = document.getElementById("charCount");
-        const wordCount = document.getElementById("wordCount");
-        const exceedMsg = document.getElementById("exceedMsg");
-        const exceedCount = document.getElementById("exceedCount");
-        const includeSpaces = document.getElementById("includeSpaces");
-        const limitChars = document.getElementById("limitChars");
-        const charLimit = document.getElementById("charLimit");
-        const alignmentSelect = document.getElementById("alignment");
-        const textDirectionSelect = document.getElementById("textDirection");
+        const editor = document.getElementById('editor');
+        const charCount = document.getElementById('charCount');
+        const wordCount = document.getElementById('wordCount');
+        const charError = document.getElementById('charError');
+        const alignSelect = document.getElementById('align');
+        const dirSelect = document.getElementById('dir');
 
-        function loadSettings() {
-            let settings = localStorage.getItem("counterSettings");
-            let savedText = localStorage.getItem("userText");
+        let maxLength = 500; // Limite de caractères
 
-            if (settings) {
-                settings = JSON.parse(settings);
-                includeSpaces.checked = settings.includeSpaces;
-                limitChars.checked = settings.limitChars;
-                charLimit.value = settings.charLimit;
-                editor.style.textAlign = settings.textAlign || "left";
-                editor.style.direction = settings.textDirection || "ltr";
-                alignmentSelect.value = settings.textAlign || "left";
-                textDirectionSelect.value = settings.textDirection || "ltr";
-            }
+        function updateCount() {
+            const text = editor.value;
+            const wordCountValue = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const charCountValue = text.length;
 
-            if (savedText) {
-                editor.innerText = savedText; // Texte brut sans balises HTML
-            }
-        }
-
-        function saveSettings() {
-            const settings = {
-                includeSpaces: includeSpaces.checked,
-                limitChars: limitChars.checked,
-                charLimit: charLimit.value,
-                textAlign: editor.style.textAlign,
-                textDirection: editor.style.direction
-            };
-            localStorage.setItem("counterSettings", JSON.stringify(settings));
-
-            // Sauvegarde du texte utilisateur sans balises HTML
-            localStorage.setItem("userText", editor.innerText);
-        }
-
-        function countWordsAndChars() {
-            let text = editor.innerText;
-            let maxLength = parseInt(charLimit.value, 10);
-            let charCountValue = includeSpaces.checked ? text.length : text.replace(/\s/g, "").length;
-
+            wordCount.textContent = wordCountValue;
             charCount.textContent = charCountValue;
-            let words = text.trim().split(/\s+/).filter(word => word.length > 0);
-            wordCount.textContent = words.length;
 
-            if (limitChars.checked && charCountValue > maxLength) {
-                let validText = text.substring(0, maxLength);
-                let excessText = text.substring(maxLength);
-                editor.innerHTML = validText + `<span class="exceed">${excessText}</span>`;
-                exceedMsg.style.display = "block";
-                exceedCount.textContent = excessText.length;
+            if (charCountValue > maxLength) {
+                charError.textContent = `Vous avez dépassé la limite de ${maxLength} caractères de ${charCountValue - maxLength} caractères.`;
+                editor.style.color = 'red';
             } else {
-                editor.innerHTML = text;
-                exceedMsg.style.display = "none";
+                charError.textContent = '';
+                editor.style.color = 'black';
             }
-
-            saveSettings();
         }
 
-        function setAlignment(align) {
-            editor.style.textAlign = align;
-            saveSettings();
+        function updateTextAlignment() {
+            editor.style.textAlign = alignSelect.value;
         }
 
-        function setTextDirection(direction) {
-            editor.style.direction = direction;
-            saveSettings();
+        function updateTextDirection() {
+            editor.style.direction = dirSelect.value;
         }
-
-        editor.addEventListener("input", countWordsAndChars);
-        includeSpaces.addEventListener("change", countWordsAndChars);
-        limitChars.addEventListener("change", countWordsAndChars);
-        charLimit.addEventListener("input", countWordsAndChars);
-
-        window.onload = () => {
-            loadSettings();
-            countWordsAndChars();
-        };
     </script>
 </body>
 </html>
