@@ -18,7 +18,8 @@
             height: 100vh;
             display: flex;
             justify-content: flex-start; /* La div sera centrée horizontalement mais alignée tout en haut */
-            align-items: center; /* Verticalement centré */
+            align-items: flex-start; /* Positionner tout en haut */
+            overflow: auto; /* Permet de scroller si nécessaire */
         }
 
         /* Conteneur principal */
@@ -34,6 +35,8 @@
             flex-direction: column;
             align-items: flex-start;
             margin-top: 20px; /* Ajuster la position au top */
+            color: white; /* Texte en blanc partout sauf dans le champ de texte */
+            min-height: 100%; /* Assurer que la div prend toute la hauteur */
         }
 
         /* Titre de la page */
@@ -41,7 +44,6 @@
             text-align: center;
             margin-bottom: 20px;
             font-size: 2em;
-            color: #fff;
         }
 
         /* Options pour aligner le texte et comptage des espaces */
@@ -75,7 +77,7 @@
             border: 1px solid rgba(255, 255, 255, 0.5);
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(5px); /* Effet de flou */
-            color: #000; /* Texte noir pour meilleur contraste */
+            color: #000; /* Texte noir pour meilleur contraste dans le champ de texte */
             min-height: 50px;
             resize: none;
             overflow: hidden;
