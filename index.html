@@ -154,6 +154,7 @@
             if (limitActive && charCountValue > maxLength) {
                 charError.textContent = `Vous avez dépassé la limite de ${maxLength} caractères de ${charCountValue - maxLength} caractères.`;
                 highlightTextOverLimit(charCountValue);
+                editor.value = text.substring(0, maxLength); // Bloquer l'entrée de texte au-delà de la limite
             } else {
                 charError.textContent = '';
                 editor.style.color = 'black'; // Si pas d'erreur, on met le texte en noir
@@ -168,14 +169,7 @@
             const excessText = editor.value.substring(maxLength);
             const textBeforeLimit = editor.value.substring(0, maxLength);
             editor.value = textBeforeLimit; // Affiche seulement le texte avant la limite
-
-            // Afficher le texte excédentaire en rouge
-            const excessSpan = document.createElement('span');
-            excessSpan.classList.add('highlight');
-            excessSpan.textContent = excessText;
-
-            // Ajouter la partie excédentaire en rouge après le texte validé
-            editor.parentNode.appendChild(excessSpan);
+            // Pas besoin de mettre en rouge ici car on bloque l'entrée d'un texte excédentaire
         }
 
         // Mettre à jour l'alignement du texte
