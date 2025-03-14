@@ -55,14 +55,6 @@
             </select>
         </div>
 
-        <div class="options">
-            <label for="dir">Direction du texte :</label>
-            <select id="dir" onchange="updateTextDirection()">
-                <option value="ltr">De gauche à droite</option>
-                <option value="rtl">De droite à gauche</option>
-            </select>
-        </div>
-
         <div class="textarea-container">
             <textarea id="editor" placeholder="Écris ici..." oninput="updateCount()"></textarea>
             <div class="output">
@@ -79,7 +71,6 @@
         const wordCount = document.getElementById('wordCount');
         const charError = document.getElementById('charError');
         const alignSelect = document.getElementById('align');
-        const dirSelect = document.getElementById('dir');
 
         let maxLength = 500; // Limite de caractères
 
@@ -102,10 +93,6 @@
 
         function updateTextAlignment() {
             editor.style.textAlign = alignSelect.value;
-        }
-
-        function updateTextDirection() {
-            editor.style.direction = dirSelect.value;
         }
     </script>
 </body>
