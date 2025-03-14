@@ -29,10 +29,12 @@
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            resize: both; /* Permet de redimensionner */
-            overflow: auto; /* Ajoute une barre de défilement si nécessaire */
+            resize: none; /* Désactive le redimensionnement manuel */
+            overflow: hidden; /* Empêche le texte de déborder */
             white-space: pre-wrap;
             color: black;
+            min-height: 50px; /* Hauteur minimale */
+            box-sizing: border-box;
         }
         .output {
             margin-top: 10px;
@@ -71,7 +73,7 @@
         </div>
 
         <div class="textarea-container">
-            <textarea id="editor" placeholder="Écris ici..." oninput="updateCount()"></textarea>
+            <textarea id="editor" placeholder="Écris ici..." oninput="updateCount(); adjustHeight()"></textarea>
             <div class="output">
                 <span>Nombre de caractères :</span> <span id="charCount">0</span><br>
                 <span>Nombre de mots :</span> <span id="wordCount">0</span><br>
@@ -100,6 +102,7 @@
                 countSpacesCheckbox.checked = savedData.countSpaces;
                 updateTextAlignment();
                 updateCount();
+                adjustHeight(); // Ajuster la hauteur du champ de texte
             }
         };
 
@@ -146,6 +149,14 @@
             saveData(); // Sauvegarder l'état de la case à cocher
             updateCount(); // Mettre à jour le comptage avec ou sans espaces
         }
+
+        // Ajuster la hauteur de la zone de texte en fonction du contenu
+        function adjustHeight() {
+            // Réinitialiser la hauteur pour ajuster dynamiquement
+            editor.style.height = 'auto';
+            editor.style.height = (editor.scrollHeight) + 'px';
+        }
+
     </script>
 </body>
 </html>
