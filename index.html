@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compteur de mots, caractères et paragraphes</title>
     <style>
-        /* Mise en place du fond de la page */
+        /* Mise en place du fond de la page avec linear gradient et effet grain */
         body {
-            background: url('https://images.unsplash.com/photo-1521747116042-5b3f3eaa4b34?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fGdyZWF0fGVufDB8fHx8fDE2NTYxNjkwNjc&ixlib=rb-1.2.1&q=80&w=1080') no-repeat center center fixed;
+            background: 
+                linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2)),
+                url('https://www.transparenttextures.com/patterns/8bit.png'); /* Image de grain */
             background-size: cover;
+            background-blend-mode: overlay; /* Mélange le dégradé avec le grain */
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
@@ -18,7 +21,6 @@
             align-items: center;
             color: #fff;
         }
-
 
         /* Conteneur principal */
         .container {
