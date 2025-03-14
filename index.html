@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compteur de mots et caractères</title>
+    <title>Compteur de mots, caractères et paragraphes</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -60,6 +60,7 @@
             <div class="output">
                 <span>Nombre de caractères :</span> <span id="charCount">0</span><br>
                 <span>Nombre de mots :</span> <span id="wordCount">0</span><br>
+                <span>Nombre de paragraphes :</span> <span id="paragraphCount">0</span><br>
                 <span class="error" id="charError"></span>
             </div>
         </div>
@@ -69,6 +70,7 @@
         const editor = document.getElementById('editor');
         const charCount = document.getElementById('charCount');
         const wordCount = document.getElementById('wordCount');
+        const paragraphCount = document.getElementById('paragraphCount');
         const charError = document.getElementById('charError');
         const alignSelect = document.getElementById('align');
 
@@ -78,9 +80,11 @@
             const text = editor.value;
             const wordCountValue = text.trim() ? text.trim().split(/\s+/).length : 0;
             const charCountValue = text.length;
+            const paragraphCountValue = text.split(/\n+/).filter(paragraph => paragraph.trim().length > 0).length;
 
             wordCount.textContent = wordCountValue;
             charCount.textContent = charCountValue;
+            paragraphCount.textContent = paragraphCountValue;
 
             if (charCountValue > maxLength) {
                 charError.textContent = `Vous avez dépassé la limite de ${maxLength} caractères de ${charCountValue - maxLength} caractères.`;
