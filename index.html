@@ -40,6 +40,9 @@
         .error {
             color: red;
         }
+        .highlight {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -62,6 +65,13 @@
             <input type="number" id="maxLength" value="500" onchange="updateMaxLength()">
         </div>
 
+        <div class="options">
+            <label for="highlightOverLimit">
+                <input type="checkbox" id="highlightOverLimit" onchange="updateHighlightOption()">
+                Mettre en rouge le texte excédentaire
+            </label>
+        </div>
+
         <div class="textarea-container">
             <textarea id="editor" placeholder="Écris ici..." oninput="updateCount()"></textarea>
             <div class="output">
@@ -82,6 +92,7 @@
         const charError = document.getElementById('charError');
         const alignSelect = document.getElementById('align');
         const maxLengthInput = document.getElementById('maxLength');
+        const highlightOverLimitCheckbox = document.getElementById('highlightOverLimit');
 
         // Récupérer les données sauvegardées dans localStorage
         window.onload = function() {
@@ -90,6 +101,7 @@
                 editor.value = savedData.text;
                 alignSelect.value = savedData.align;
                 maxLengthInput.value = savedData.maxLength;
+                highlightOverLimitCheckbox.checked = savedData.highlightOverLimit;
                 updateCount();
                 updateTextAlignment();
             }
@@ -102,7 +114,8 @@
             const data = {
                 text: editor.value,
                 align: alignSelect.value,
-                maxLength: maxLengthInput.value
+                maxLength: maxLengthInput.value,
+                highlightOverLimit: highlightOverLimitCheckbox.checked
             };
             localStorage.setItem('textData', JSON.stringify(data));
         }
@@ -120,13 +133,28 @@
 
             if (charCountValue > maxLength) {
                 charError.textContent = `Vous avez dépassé la limite de ${maxLength} caractères de ${charCountValue - maxLength} caractères.`;
-                editor.style.color = 'red';
+                editor.style.color = 'black'; // Le texte reste noir si l'option de surbrillance est désactivée
+                highlightTextOverLimit(charCountValue);
             } else {
                 charError.textContent = '';
                 editor.style.color = 'black';
             }
 
             saveData(); // Sauvegarder les données à chaque mise à jour
+        }
+
+        // Mettre en rouge uniquement le texte excédentaire
+        function highlightTextOverLimit(charCountValue) {
+            if (highlightOverLimitCheckbox.checked) {
+                const excessText = editor.value.substring(maxLength);
+                const textBeforeLimit = editor.value.substring(0, maxLength);
+                editor.value = textBeforeLimit; // Affiche seulement le texte avant la limite
+                editor.style.color = 'black'; // Remet la couleur noire pour la partie valide
+                const span = document.createElement('span');
+                span.classList.add('highlight');
+                span.textContent = excessText;
+                editor.insertAdjacentHTML('beforeend', span.outerHTML);
+            }
         }
 
         // Mettre à jour l'alignement du texte
@@ -139,6 +167,12 @@
         function updateMaxLength() {
             maxLength = parseInt(maxLengthInput.value, 10);
             saveData(); // Sauvegarder les paramètres après modification
+        }
+
+        // Mettre à jour l'option de surbrillance du texte excédentaire
+        function updateHighlightOption() {
+            saveData(); // Sauvegarder l'état de la case à cocher
+            updateCount(); // Mettre à jour le comptage avec ou sans surbrillance
         }
     </script>
 </body>
