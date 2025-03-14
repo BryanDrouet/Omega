@@ -19,51 +19,20 @@
             padding: 5px;
             cursor: pointer;
         }
-        .text-container {
-            position: relative;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        textarea {
+        .editor {
             width: 100%;
             height: 150px;
-            resize: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: transparent;
-            color: transparent;
-            font-size: 16px;
-            line-height: 1.5;
             padding: 5px;
             border: 1px solid #ccc;
-            z-index: 1;
-            caret-color: black;
-        }
-        .overlay {
-            width: 100%;
-            height: 150px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-size: 16px;
-            line-height: 1.5;
-            padding: 5px;
-            color: black;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .overlay span {
-            color: red;
+            overflow-y: auto;
+            text-align: left;
         }
         .counter {
             margin-top: 10px;
             font-size: 18px;
         }
-        input[type="number"] {
-            width: 80px;
+        .editor span.exceed {
+            color: red;
         }
     </style>
 </head>
@@ -84,11 +53,8 @@
         <button onclick="formatText('underline')"><u>U</u></button>
     </div>
 
-    <!-- Zone de texte -->
-    <div class="text-container">
-        <textarea id="textInput" placeholder="Tapez ou collez du texte..."></textarea>
-        <div class="overlay" id="textOverlay"></div>
-    </div>
+    <!-- Zone de texte éditable -->
+    <div id="editor" class="editor" contenteditable="true"></div>
 
     <!-- Paramètres -->
     <div>
@@ -111,8 +77,7 @@
     </div>
 
     <script>
-        const textInput = document.getElementById("textInput");
-        const textOverlay = document.getElementById("textOverlay");
+        const editor = document.getElementById("editor");
         const charCount = document.getElementById("charCount");
         const wordCount = document.getElementById("wordCount");
         const exceedMsg = document.getElementById("exceedMsg");
@@ -129,7 +94,7 @@
                 includeSpaces.checked = settings.includeSpaces;
                 limitChars.checked = settings.limitChars;
                 charLimit.value = settings.charLimit;
-                textOverlay.style.textAlign = settings.textAlign || "left";
+                editor.style.textAlign = settings.textAlign || "left";
                 alignmentSelect.value = settings.textAlign || "left";
             }
         }
@@ -139,13 +104,13 @@
                 includeSpaces: includeSpaces.checked,
                 limitChars: limitChars.checked,
                 charLimit: charLimit.value,
-                textAlign: textOverlay.style.textAlign
+                textAlign: editor.style.textAlign
             };
             localStorage.setItem("counterSettings", JSON.stringify(settings));
         }
 
         function countWordsAndChars() {
-            let text = textInput.value;
+            let text = editor.innerText;
             let maxLength = parseInt(charLimit.value, 10);
             let charCountValue = includeSpaces.checked ? text.length : text.replace(/\s/g, "").length;
 
@@ -153,14 +118,14 @@
             let words = text.trim().split(/\s+/).filter(word => word.length > 0);
             wordCount.textContent = words.length;
 
-            if (limitChars.checked && text.length > maxLength) {
+            if (limitChars.checked && charCountValue > maxLength) {
                 let validText = text.substring(0, maxLength);
                 let excessText = text.substring(maxLength);
-                textOverlay.innerHTML = validText + `<span>${excessText}</span>`;
+                editor.innerHTML = validText + `<span class="exceed">${excessText}</span>`;
                 exceedMsg.style.display = "block";
                 exceedCount.textContent = excessText.length;
             } else {
-                textOverlay.textContent = text;
+                editor.innerHTML = text;
                 exceedMsg.style.display = "none";
             }
 
@@ -168,35 +133,15 @@
         }
 
         function setAlignment(align) {
-            textOverlay.style.textAlign = align;
+            editor.style.textAlign = align;
             saveSettings();
         }
 
         function formatText(command) {
-            let start = textInput.selectionStart;
-            let end = textInput.selectionEnd;
-            let text = textInput.value;
-
-            if (start !== end) {
-                let before = text.substring(0, start);
-                let selected = text.substring(start, end);
-                let after = text.substring(end);
-
-                if (command === "bold") {
-                    selected = `**${selected}**`;
-                } else if (command === "italic") {
-                    selected = `*${selected}*`;
-                } else if (command === "underline") {
-                    selected = `_${selected}_`;
-                }
-
-                textInput.value = before + selected + after;
-                textInput.selectionStart = textInput.selectionEnd = start + selected.length;
-                countWordsAndChars();
-            }
+            document.execCommand(command, false, null);
         }
 
-        textInput.addEventListener("input", countWordsAndChars);
+        editor.addEventListener("input", countWordsAndChars);
         includeSpaces.addEventListener("change", countWordsAndChars);
         limitChars.addEventListener("change", countWordsAndChars);
         charLimit.addEventListener("input", countWordsAndChars);
