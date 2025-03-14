@@ -72,6 +72,13 @@
             </label>
         </div>
 
+        <div class="options">
+            <label for="countSpaces">
+                <input type="checkbox" id="countSpaces" onchange="updateCountSpaces()">
+                Compter les espaces
+            </label>
+        </div>
+
         <div class="textarea-container">
             <textarea id="editor" placeholder="Écris ici..." oninput="updateCount()"></textarea>
             <div class="output">
@@ -93,6 +100,7 @@
         const alignSelect = document.getElementById('align');
         const maxLengthInput = document.getElementById('maxLength');
         const highlightOverLimitCheckbox = document.getElementById('highlightOverLimit');
+        const countSpacesCheckbox = document.getElementById('countSpaces');
 
         // Récupérer les données sauvegardées dans localStorage
         window.onload = function() {
@@ -102,12 +110,14 @@
                 alignSelect.value = savedData.align;
                 maxLengthInput.value = savedData.maxLength;
                 highlightOverLimitCheckbox.checked = savedData.highlightOverLimit;
+                countSpacesCheckbox.checked = savedData.countSpaces;
                 updateCount();
                 updateTextAlignment();
             }
         };
 
         let maxLength = 500; // Limite de caractères initiale
+        let countSpaces = true; // Par défaut, on compte les espaces
 
         // Sauvegarder les paramètres et le texte à chaque modification
         function saveData() {
@@ -115,7 +125,8 @@
                 text: editor.value,
                 align: alignSelect.value,
                 maxLength: maxLengthInput.value,
-                highlightOverLimit: highlightOverLimitCheckbox.checked
+                highlightOverLimit: highlightOverLimitCheckbox.checked,
+                countSpaces: countSpacesCheckbox.checked
             };
             localStorage.setItem('textData', JSON.stringify(data));
         }
@@ -123,8 +134,9 @@
         // Mettre à jour le comptage des mots, caractères et paragraphes
         function updateCount() {
             const text = editor.value;
-            const wordCountValue = text.trim() ? text.trim().split(/\s+/).length : 0;
-            const charCountValue = text.length;
+            const countText = countSpaces ? text : text.replace(/\s+/g, '');
+            const wordCountValue = countText.trim() ? countText.trim().split(/\s+/).length : 0;
+            const charCountValue = countText.length;
             const paragraphCountValue = text.split(/\n+/).filter(paragraph => paragraph.trim().length > 0).length;
 
             wordCount.textContent = wordCountValue;
@@ -133,11 +145,10 @@
 
             if (charCountValue > maxLength) {
                 charError.textContent = `Vous avez dépassé la limite de ${maxLength} caractères de ${charCountValue - maxLength} caractères.`;
-                editor.style.color = 'black'; // Le texte reste noir si l'option de surbrillance est désactivée
                 highlightTextOverLimit(charCountValue);
             } else {
                 charError.textContent = '';
-                editor.style.color = 'black';
+                editor.style.color = 'black'; // Si pas d'erreur, on met le texte en noir
             }
 
             saveData(); // Sauvegarder les données à chaque mise à jour
@@ -173,6 +184,13 @@
         function updateHighlightOption() {
             saveData(); // Sauvegarder l'état de la case à cocher
             updateCount(); // Mettre à jour le comptage avec ou sans surbrillance
+        }
+
+        // Mettre à jour l'option de comptage des espaces
+        function updateCountSpaces() {
+            countSpaces = countSpacesCheckbox.checked;
+            saveData(); // Sauvegarder l'état de la case à cocher
+            updateCount(); // Mettre à jour le comptage avec ou sans espaces
         }
     </script>
 </body>
