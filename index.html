@@ -5,35 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compteur de mots, caractères et paragraphes</title>
     <style>
-        /* Mise en place du fond de la page avec linear gradient et effet grain */
+        /* Mise en place du fond de la page avec un gradient intensifié et effet grain */
         body {
             background: 
-                linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)),
+                linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.5)), /* Gradient plus intense */
                 url('https://www.transparenttextures.com/patterns/8bit.png'); /* Image de grain */
             background-size: cover;
-            background-blend-mode: overlay; /* Mélange le dégradé avec le grain */
+            background-blend-mode: overlay;
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
+            justify-content: flex-start; /* La div sera centrée horizontalement mais alignée tout en haut */
+            align-items: center; /* Verticalement centré */
         }
 
         /* Conteneur principal */
         .container {
-            background: rgba(255, 255, 255, 0.15); /* Fond semi-transparent plus foncé pour améliorer la lisibilité */
+            background: rgba(255, 255, 255, 0.15); /* Fond semi-transparent pour plus de contraste */
             border-radius: 20px;
             backdrop-filter: blur(10px); /* Effet de flou */
             padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); /* Ombre pour améliorer le contraste */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); /* Ombre pour plus de contraste */
             width: 100%;
             max-width: 700px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            margin-top: 20px; /* Ajuster la position au top */
         }
 
         /* Titre de la page */
