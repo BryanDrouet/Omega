@@ -8,7 +8,7 @@
         /* Mise en place du fond de la page avec linear gradient et effet grain */
         body {
             background: 
-                linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2)),
+                linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)),
                 url('https://www.transparenttextures.com/patterns/8bit.png'); /* Image de grain */
             background-size: cover;
             background-blend-mode: overlay; /* Mélange le dégradé avec le grain */
@@ -24,11 +24,11 @@
 
         /* Conteneur principal */
         .container {
-            background: rgba(255, 255, 255, 0.1); /* Fond semi-transparent */
+            background: rgba(255, 255, 255, 0.15); /* Fond semi-transparent plus foncé pour améliorer la lisibilité */
             border-radius: 20px;
             backdrop-filter: blur(10px); /* Effet de flou */
             padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); /* Ombre pour améliorer le contraste */
             width: 100%;
             max-width: 700px;
             display: flex;
@@ -51,8 +51,8 @@
         }
 
         .options select, .options input {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.3); /* Fond plus clair pour les inputs */
+            border: 1px solid rgba(255, 255, 255, 0.7); /* Bordure plus visible */
             border-radius: 10px;
             padding: 10px;
             font-size: 16px;
@@ -74,8 +74,8 @@
             border-radius: 15px;
             border: 1px solid rgba(255, 255, 255, 0.5);
             background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-            color: white;
+            backdrop-filter: blur(5px); /* Effet de flou */
+            color: #000; /* Texte noir pour meilleur contraste */
             min-height: 50px;
             resize: none;
             overflow: hidden;
