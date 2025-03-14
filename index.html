@@ -14,7 +14,7 @@
         .toolbar {
             margin-bottom: 10px;
         }
-        .toolbar select, .toolbar button {
+        .toolbar select {
             margin: 2px;
             padding: 5px;
             cursor: pointer;
@@ -48,9 +48,6 @@
             <option value="right">Droite</option>
             <option value="justify">Justifié</option>
         </select>
-        <button onclick="formatText('bold')"><b>B</b></button>
-        <button onclick="formatText('italic')"><i>I</i></button>
-        <button onclick="formatText('underline')"><u>U</u></button>
     </div>
 
     <!-- Zone de texte éditable -->
@@ -135,10 +132,6 @@
         function setAlignment(align) {
             editor.style.textAlign = align;
             saveSettings();
-        }
-
-        function formatText(command) {
-            document.execCommand(command, false, null);
         }
 
         editor.addEventListener("input", countWordsAndChars);
