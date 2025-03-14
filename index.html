@@ -66,18 +66,6 @@
         </div>
 
         <div class="options">
-            <label for="limitCheckbox">
-                <input type="checkbox" id="limitCheckbox" onchange="toggleMaxLengthInput()">
-                Activer la limite de caractères
-            </label>
-        </div>
-
-        <div class="options" id="maxLengthDiv" style="display: none;">
-            <label for="maxLength">Limite de caractères :</label>
-            <input type="number" id="maxLength" value="500" min="1" onchange="updateMaxLength()">
-        </div>
-
-        <div class="options">
             <label for="countSpaces">
                 <input type="checkbox" id="countSpaces" onchange="updateCountSpaces()">
                 Compter les espaces dans les caractères
@@ -103,10 +91,7 @@
         const paragraphCount = document.getElementById('paragraphCount');
         const charError = document.getElementById('charError');
         const alignSelect = document.getElementById('align');
-        const maxLengthInput = document.getElementById('maxLength');
         const countSpacesCheckbox = document.getElementById('countSpaces');
-        const limitCheckbox = document.getElementById('limitCheckbox');
-        const maxLengthDiv = document.getElementById('maxLengthDiv');
 
         // Récupérer les données sauvegardées dans localStorage
         window.onload = function() {
@@ -114,26 +99,19 @@
             if (savedData) {
                 editor.value = savedData.text;
                 alignSelect.value = savedData.align;
-                limitCheckbox.checked = savedData.limitActive;
-                maxLengthInput.value = savedData.maxLength;
                 countSpacesCheckbox.checked = savedData.countSpaces;
                 updateTextAlignment();
-                toggleMaxLengthInput();
                 updateCount();
             }
         };
 
-        let maxLength = 500; // Limite de caractères initiale
         let countSpaces = true; // Par défaut, on compte les espaces
-        let limitActive = false; // Limite désactivée par défaut
 
         // Sauvegarder les paramètres et le texte à chaque modification
         function saveData() {
             const data = {
                 text: editor.value,
                 align: alignSelect.value,
-                limitActive: limitActive,
-                maxLength: maxLengthInput.value,
                 countSpaces: countSpacesCheckbox.checked
             };
             localStorage.setItem('textData', JSON.stringify(data));
@@ -151,50 +129,17 @@
             charCount.textContent = charCountValue;
             paragraphCount.textContent = paragraphCountValue;
 
-            if (limitActive && charCountValue > maxLength) {
-                charError.textContent = `Vous avez dépassé la limite de ${maxLength} caractères de ${charCountValue - maxLength} caractères.`;
-                highlightTextOverLimit(charCountValue);
-                editor.value = text.substring(0, maxLength); // Bloquer l'entrée de texte au-delà de la limite
-            } else {
-                charError.textContent = '';
-                editor.style.color = 'black'; // Si pas d'erreur, on met le texte en noir
-                editor.style.borderColor = '#ccc'; // Réinitialiser la bordure
-            }
+            charError.textContent = '';
+            editor.style.color = 'black'; // Réinitialiser la couleur du texte
+            editor.style.borderColor = '#ccc'; // Réinitialiser la bordure
 
             saveData(); // Sauvegarder les données à chaque mise à jour
-        }
-
-        // Mettre en rouge uniquement le texte excédentaire
-        function highlightTextOverLimit(charCountValue) {
-            const excessText = editor.value.substring(maxLength);
-            const textBeforeLimit = editor.value.substring(0, maxLength);
-            editor.value = textBeforeLimit; // Affiche seulement le texte avant la limite
-            // Pas besoin de mettre en rouge ici car on bloque l'entrée d'un texte excédentaire
         }
 
         // Mettre à jour l'alignement du texte
         function updateTextAlignment() {
             editor.style.textAlign = alignSelect.value;
             saveData(); // Sauvegarder les paramètres après modification
-        }
-
-        // Mettre à jour la limite de caractères
-        function updateMaxLength() {
-            maxLength = parseInt(maxLengthInput.value, 10);
-            saveData(); // Sauvegarder les paramètres après modification
-        }
-
-        // Activer/désactiver la limite de caractères
-        function toggleMaxLengthInput() {
-            limitActive = limitCheckbox.checked;
-            if (limitActive) {
-                maxLengthDiv.style.display = 'block';
-            } else {
-                maxLengthDiv.style.display = 'none';
-                maxLength = Number.MAX_SAFE_INTEGER; // Pas de limite si désactivée
-            }
-            updateCount();
-            saveData();
         }
 
         // Mettre à jour l'option de comptage des espaces
