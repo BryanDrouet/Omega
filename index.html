@@ -26,6 +26,7 @@
             border: 1px solid #ccc;
             overflow-y: auto;
             text-align: left;
+            white-space: pre-wrap;
         }
         .counter {
             margin-top: 10px;
@@ -106,7 +107,7 @@
             }
 
             if (savedText) {
-                editor.innerText = savedText;
+                editor.innerText = savedText; // Texte brut sans balises HTML
             }
         }
 
@@ -120,7 +121,7 @@
             };
             localStorage.setItem("counterSettings", JSON.stringify(settings));
 
-            // Sauvegarde du texte utilisateur
+            // Sauvegarde du texte utilisateur sans balises HTML
             localStorage.setItem("userText", editor.innerText);
         }
 
