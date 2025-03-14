@@ -15,10 +15,14 @@
             width: 100%;
             height: 150px;
             margin-top: 10px;
+            resize: none;
         }
         .counter {
             margin-top: 10px;
             font-size: 18px;
+        }
+        input[type="number"] {
+            width: 80px;
         }
     </style>
 </head>
@@ -27,9 +31,16 @@
     <textarea id="textInput" placeholder="Tapez ou collez du texte..."></textarea>
     <div>
         <label>
-            <input type="checkbox" id="includeSpaces" checked>
+            <input type="checkbox" id="includeSpaces">
             Compter les espaces
         </label>
+    </div>
+    <div>
+        <label>
+            <input type="checkbox" id="limitChars">
+            Activer limite de caractères
+        </label>
+        <input type="number" id="charLimit" value="100" min="1">
     </div>
     <div class="counter">
         <p>Caractères : <span id="charCount">0</span></p>
@@ -41,17 +52,54 @@
         const charCount = document.getElementById("charCount");
         const wordCount = document.getElementById("wordCount");
         const includeSpaces = document.getElementById("includeSpaces");
+        const limitChars = document.getElementById("limitChars");
+        const charLimit = document.getElementById("charLimit");
+
+        function loadSettings() {
+            let settings = localStorage.getItem("counterSettings");
+            if (settings) {
+                settings = JSON.parse(settings);
+                includeSpaces.checked = settings.includeSpaces;
+                limitChars.checked = settings.limitChars;
+                charLimit.value = settings.charLimit;
+            }
+        }
+
+        function saveSettings() {
+            const settings = {
+                includeSpaces: includeSpaces.checked,
+                limitChars: limitChars.checked,
+                charLimit: charLimit.value
+            };
+            localStorage.setItem("counterSettings", JSON.stringify(settings));
+        }
 
         function countWordsAndChars() {
             let text = textInput.value;
-            charCount.textContent = includeSpaces.checked ? text.length : text.replace(/\s/g, "").length;
+            if (limitChars.checked) {
+                let maxLength = parseInt(charLimit.value, 10);
+                if (text.length > maxLength) {
+                    text = text.substring(0, maxLength);
+                    textInput.value = text;
+                }
+            }
 
+            charCount.textContent = includeSpaces.checked ? text.length : text.replace(/\s/g, "").length;
             let words = text.trim().split(/\s+/).filter(word => word.length > 0);
             wordCount.textContent = words.length;
+
+            saveSettings();
         }
 
         textInput.addEventListener("input", countWordsAndChars);
         includeSpaces.addEventListener("change", countWordsAndChars);
+        limitChars.addEventListener("change", countWordsAndChars);
+        charLimit.addEventListener("input", countWordsAndChars);
+
+        window.onload = () => {
+            loadSettings();
+            countWordsAndChars();
+        };
     </script>
 </body>
 </html>
