@@ -14,9 +14,9 @@
         .toolbar {
             margin-bottom: 10px;
         }
-        .toolbar button {
+        .toolbar select, .toolbar button {
             margin: 2px;
-            padding: 5px 10px;
+            padding: 5px;
             cursor: pointer;
         }
         .text-container {
@@ -72,10 +72,13 @@
 
     <!-- Barre d'outils -->
     <div class="toolbar">
-        <button onclick="setAlignment('left')">⬅ Gauche</button>
-        <button onclick="setAlignment('center')">⬆ Centre</button>
-        <button onclick="setAlignment('right')">➡ Droite</button>
-        <button onclick="setAlignment('justify')">↔ Justifié</button>
+        <label for="alignment">Alignement :</label>
+        <select id="alignment" onchange="setAlignment(this.value)">
+            <option value="left">Gauche</option>
+            <option value="center">Centre</option>
+            <option value="right">Droite</option>
+            <option value="justify">Justifié</option>
+        </select>
         <button onclick="formatText('bold')"><b>B</b></button>
         <button onclick="formatText('italic')"><i>I</i></button>
         <button onclick="formatText('underline')"><u>U</u></button>
@@ -117,6 +120,7 @@
         const includeSpaces = document.getElementById("includeSpaces");
         const limitChars = document.getElementById("limitChars");
         const charLimit = document.getElementById("charLimit");
+        const alignmentSelect = document.getElementById("alignment");
 
         function loadSettings() {
             let settings = localStorage.getItem("counterSettings");
@@ -126,6 +130,7 @@
                 limitChars.checked = settings.limitChars;
                 charLimit.value = settings.charLimit;
                 textOverlay.style.textAlign = settings.textAlign || "left";
+                alignmentSelect.value = settings.textAlign || "left";
             }
         }
 
