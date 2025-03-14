@@ -11,10 +11,18 @@
             margin: 20px auto;
             text-align: center;
         }
+        .toolbar {
+            margin-bottom: 10px;
+        }
+        .toolbar button {
+            margin: 2px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
         .text-container {
             position: relative;
             width: 100%;
-            margin-top: 10px;
+            margin-bottom: 10px;
         }
         textarea {
             width: 100%;
@@ -61,10 +69,25 @@
 </head>
 <body>
     <h2>Compteur de mots et de caractères</h2>
+
+    <!-- Barre d'outils -->
+    <div class="toolbar">
+        <button onclick="setAlignment('left')">⬅ Gauche</button>
+        <button onclick="setAlignment('center')">⬆ Centre</button>
+        <button onclick="setAlignment('right')">➡ Droite</button>
+        <button onclick="setAlignment('justify')">↔ Justifié</button>
+        <button onclick="formatText('bold')"><b>B</b></button>
+        <button onclick="formatText('italic')"><i>I</i></button>
+        <button onclick="formatText('underline')"><u>U</u></button>
+    </div>
+
+    <!-- Zone de texte -->
     <div class="text-container">
         <textarea id="textInput" placeholder="Tapez ou collez du texte..."></textarea>
         <div class="overlay" id="textOverlay"></div>
     </div>
+
+    <!-- Paramètres -->
     <div>
         <label>
             <input type="checkbox" id="includeSpaces">
@@ -102,6 +125,7 @@
                 includeSpaces.checked = settings.includeSpaces;
                 limitChars.checked = settings.limitChars;
                 charLimit.value = settings.charLimit;
+                textOverlay.style.textAlign = settings.textAlign || "left";
             }
         }
 
@@ -109,7 +133,8 @@
             const settings = {
                 includeSpaces: includeSpaces.checked,
                 limitChars: limitChars.checked,
-                charLimit: charLimit.value
+                charLimit: charLimit.value,
+                textAlign: textOverlay.style.textAlign
             };
             localStorage.setItem("counterSettings", JSON.stringify(settings));
         }
@@ -135,6 +160,35 @@
             }
 
             saveSettings();
+        }
+
+        function setAlignment(align) {
+            textOverlay.style.textAlign = align;
+            saveSettings();
+        }
+
+        function formatText(command) {
+            let start = textInput.selectionStart;
+            let end = textInput.selectionEnd;
+            let text = textInput.value;
+
+            if (start !== end) {
+                let before = text.substring(0, start);
+                let selected = text.substring(start, end);
+                let after = text.substring(end);
+
+                if (command === "bold") {
+                    selected = `**${selected}**`;
+                } else if (command === "italic") {
+                    selected = `*${selected}*`;
+                } else if (command === "underline") {
+                    selected = `_${selected}_`;
+                }
+
+                textInput.value = before + selected + after;
+                textInput.selectionStart = textInput.selectionEnd = start + selected.length;
+                countWordsAndChars();
+            }
         }
 
         textInput.addEventListener("input", countWordsAndChars);
