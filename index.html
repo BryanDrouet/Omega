@@ -48,6 +48,11 @@
             <option value="right">Droite</option>
             <option value="justify">Justifié</option>
         </select>
+        <label for="textDirection">Direction du texte :</label>
+        <select id="textDirection" onchange="setTextDirection(this.value)">
+            <option value="ltr">De gauche à droite</option>
+            <option value="rtl">De droite à gauche</option>
+        </select>
     </div>
 
     <!-- Zone de texte éditable -->
@@ -83,16 +88,25 @@
         const limitChars = document.getElementById("limitChars");
         const charLimit = document.getElementById("charLimit");
         const alignmentSelect = document.getElementById("alignment");
+        const textDirectionSelect = document.getElementById("textDirection");
 
         function loadSettings() {
             let settings = localStorage.getItem("counterSettings");
+            let savedText = localStorage.getItem("userText");
+
             if (settings) {
                 settings = JSON.parse(settings);
                 includeSpaces.checked = settings.includeSpaces;
                 limitChars.checked = settings.limitChars;
                 charLimit.value = settings.charLimit;
                 editor.style.textAlign = settings.textAlign || "left";
+                editor.style.direction = settings.textDirection || "ltr";
                 alignmentSelect.value = settings.textAlign || "left";
+                textDirectionSelect.value = settings.textDirection || "ltr";
+            }
+
+            if (savedText) {
+                editor.innerHTML = savedText;
             }
         }
 
@@ -101,9 +115,13 @@
                 includeSpaces: includeSpaces.checked,
                 limitChars: limitChars.checked,
                 charLimit: charLimit.value,
-                textAlign: editor.style.textAlign
+                textAlign: editor.style.textAlign,
+                textDirection: editor.style.direction
             };
             localStorage.setItem("counterSettings", JSON.stringify(settings));
+
+            // Sauvegarde du texte utilisateur
+            localStorage.setItem("userText", editor.innerHTML);
         }
 
         function countWordsAndChars() {
@@ -131,6 +149,11 @@
 
         function setAlignment(align) {
             editor.style.textAlign = align;
+            saveSettings();
+        }
+
+        function setTextDirection(direction) {
+            editor.style.direction = direction;
             saveSettings();
         }
 
