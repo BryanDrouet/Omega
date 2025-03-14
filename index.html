@@ -106,7 +106,7 @@
             }
 
             if (savedText) {
-                editor.innerHTML = savedText;
+                editor.innerText = savedText;
             }
         }
 
@@ -121,7 +121,7 @@
             localStorage.setItem("counterSettings", JSON.stringify(settings));
 
             // Sauvegarde du texte utilisateur
-            localStorage.setItem("userText", editor.innerHTML);
+            localStorage.setItem("userText", editor.innerText);
         }
 
         function countWordsAndChars() {
